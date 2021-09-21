@@ -63,23 +63,23 @@ imagnumber              ({floatnumber}|{intpart})[jJ]
 
 %%
 
-<INITIAL,INLINE><<EOF>> %{ 
+<INITIAL,INLINE><<EOF>> %{
                             // if the last statement in indented, need to force a dedent before EOF
                             if (this.indents == undefined) { this.indents = [0]; }
-                            if (this.indents.length > 1) { 
-                               this.begin( 'DEDENTS' ); 
-                               this.unput(' '); // make sure EOF is not triggered 
-                               this.dedents = 1; 
+                            if (this.indents.length > 1) {
+                               this.begin( 'DEDENTS' );
+                               this.unput(' '); // make sure EOF is not triggered
+                               this.dedents = 1;
                                this.indents.pop();
-                            } else { 
-                                return 'EOF'; 
-                            } 
+                            } else {
+                                return 'EOF';
+                            }
                         %}
 <INITIAL>\              %{ if (this.indent == undefined) this.indent = 0; this.indent += 1 %}
 <INITIAL>\t             %{ if (this.indent == undefined) this.indent = 0; this.indent = ( this.indent + 8 ) & -7 %}
 <INITIAL>\n             %{ this.indent = 0 %} // blank line
 <INITIAL>\#[^\n]*       /* skip comments */
-<INITIAL>.              %{ 
+<INITIAL>.              %{
                             this.unput( yytext )
                             if (this.indents == undefined) this.indents = [0];
                             var last = this.indents[ this.indents.length - 1 ]
@@ -118,7 +118,7 @@ imagnumber              ({floatnumber}|{intpart})[jJ]
                             // implicit line joining
                             if (this.brackets_count == undefined) this.brackets_count = 0;
                             if ( this.brackets_count <= 0 ) {
-                                this.indent = 0; 
+                                this.indent = 0;
                                 this.begin( 'INITIAL' )
                                 return 'NEWLINE'
                             }
@@ -179,7 +179,7 @@ imagnumber              ({floatnumber}|{intpart})[jJ]
                             } else if ( yytext == '}' || yytext == ']' || yytext == ')' ) {
                                 this.brackets_count -= 1
                             }
-                            return yytext 
+                            return yytext
                         %}
 <INLINE>{stringliteral} return 'STRING'
 <INLINE>{bytesliteral} %{
@@ -278,8 +278,8 @@ parameters
         { $$ = $2 }
     ;
 
-// typedargslist: (tfpdef ['=' test] 
-//    (',' tfpdef ['=' test])* 
+// typedargslist: (tfpdef ['=' test]
+//    (',' tfpdef ['=' test])*
 //    [','  ['*' [tfpdef] (',' tfpdef ['=' test])* [',' '**' tfpdef] | '**' tfpdef]]
 //   |  '*' [tfpdef] (',' tfpdef ['=' test])* [',' '**' tfpdef] | '**' tfpdef)
 typedargslist
@@ -295,7 +295,7 @@ typedarglist_part
     : tfpdef
     | tfpdef '=' test
         { $1.default = $3; $$ = $1 }
-    | '*' 
+    | '*'
         { $$ = { name: '', star: true, location: @$ } }
     | '*' tfpdef
         { $$ = { name: $2, star: true, location: @$ } }
@@ -339,7 +339,7 @@ vfpdef: NAME;
 
 // stmt: simple_stmt | compound_stmt
 stmt
-    : simple_stmt 
+    : simple_stmt
         { $$ = $1 }
     | compound_stmt
         { $$ = [$1] }
@@ -391,6 +391,14 @@ assignlist
         { $$ = { targets: [], sources: $2 } }
     | '=' testlist_star_expr assignlist
         { $$ = { targets: $2.concat($3.targets), sources: $3.sources } }
+    | ':' test '=' yield_expr
+        { $$ = { targets: [], sources: [$4] } }
+    | ':' test '=' yield_expr assignlist
+        { $$ = { targets: $5, sources: [$4] } }
+    | ':' test '=' testlist_star_expr
+        { $$ = { targets: [], sources: $4 } }
+    | ':' test '=' testlist_star_expr assignlist
+        { $$ = { targets: $4.concat($5.targets), sources: $5.sources } }
     ;
 
 // testlist_star_expr: (test|star_expr) (',' (test|star_expr))* [',']
@@ -449,7 +457,7 @@ del_stmt
 
 // pass_stmt: 'pass'
 pass_stmt
-    : 'pass' 
+    : 'pass'
         { $$ = {type:'pass', location: @$} }
     ;
 
@@ -458,7 +466,7 @@ flow_stmt: break_stmt | continue_stmt | return_stmt | raise_stmt | yield_stmt;
 
 // break_stmt: 'break'
 break_stmt
-    : 'break' 
+    : 'break'
         { $$ = {type:'break', location: @$} }
     ;
 
@@ -488,7 +496,7 @@ raise_stmt
     | 'raise' test
         { $$ = {type: 'raise', err: $2, location: @$ } }
     | 'raise' test 'from' test
-        { 
+        {
             $$ = { type: 'raise',  err: $2, location: @$  }
         }
     ;
@@ -638,7 +646,7 @@ assert_stmt
 
 // compound_stmt: if_stmt | while_stmt | for_stmt | try_stmt | with_stmt |
 //                funcdef | classdef | decorated
-compound_stmt:  if_stmt | while_stmt | for_stmt | try_stmt | with_stmt | 
+compound_stmt:  if_stmt | while_stmt | for_stmt | try_stmt | with_stmt |
                 funcdef | classdef | decorated;
 
 // if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ['else' ':' suite]
@@ -646,7 +654,7 @@ if_stmt
     : 'if' test ':' suite
         { $$ = { type: 'if',  cond: $2, code: $4, location: @$ } }
     | 'if' test ':' suite else_part
-        { 
+        {
             $$ = { type: 'if', cond: $2, code: $4, else: $5, location: @$ }
         }
     | 'if' test ':' suite if_stmt0
@@ -740,7 +748,7 @@ with_stmt
     : 'with' with_item ':' suite
         { $$ = { type: 'with',  items: [ $2 ], code: $4, location: @$ } }
     | 'with' with_item with_stmt0 ':' suite
-        { 
+        {
             $2 = [ $2 ].concat( $3 )
             $$ = { type: 'with', items: $2, code: $5, location: @$ }
         }
@@ -863,7 +871,7 @@ comp_op: '<'|'>'|'=='|'>='|'<='|'!='
 
 // star_expr: '*' expr
 star_expr
-    : '*' expr 
+    : '*' expr
         { $$ = { type:'starred', value: $1, location: @$ } }
     ;
 
@@ -1145,7 +1153,7 @@ subscript
 // sliceop: ':' [test]
 sliceop
     : ':'
-        { $$ = undefined } 
+        { $$ = undefined }
     | ':' test
         { $$ = $2 }
     ;
@@ -1250,7 +1258,7 @@ classdef
     ;
 
 // arglist: (argument ',')* (argument [',']
-//  |'*' test (',' argument)* [',' '**' test] 
+//  |'*' test (',' argument)* [',' '**' test]
 //  |'**' test)
 arglist
     : argument
