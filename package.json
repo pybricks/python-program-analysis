@@ -11,7 +11,7 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "0.4.8",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/pybricks/python-program-analysis.git"
