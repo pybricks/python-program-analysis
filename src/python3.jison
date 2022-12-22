@@ -16,7 +16,7 @@ xid_continue            {xid_start}|{digit}
 
 // reserved
 operators               ">>="|"<<="|"**="|"//="|"->"|"+="|"-="|"*="|"/="|"%="|
-                        "&="|"|="|"^="|"**"|"//"|"<<"|">>"|"<="|">="|"=="|"!="|
+                        "&="|"|="|"^="|"@="|"**"|"//"|"<<"|">>"|"<="|">="|"=="|"!="|
                         "("|")"|"["|"]"|"{"|"}"|","|":"|"."|";"|"@"|"="|"+"|"-"|
                         "*"|"/"|"%"|"&"|"|"|"^"|"~"|"<"|">"|"""|"#"|"\"
 ellipsis                "..."
@@ -437,7 +437,7 @@ testlist_star_expr0
     ;
 
 // augassign: ('+=' | '-=' | '*=' | '/=' | '%=' | '&=' | '|=' | '^=' |
-//   '<<=' | '>>=' | '**=' | '//=')
+//   '<<=' | '>>=' | '**=' | '//=' | '@=')
 augassign
     : '+='
     | '-='
@@ -451,6 +451,7 @@ augassign
     | '>>='
     | '**='
     | '//='
+    | '@='
     ;
 
 // del_stmt: 'del' exprlist
@@ -980,7 +981,7 @@ arith_expr0
         { loc = @$; $$ = function (left) { return $3({type:'binop', op:$1, left: left, right: $2, location: loc }); } }
     ;
 
-// term: factor (('*'|'/'|'%'|'//') factor)*
+// term: factor (('*'|'/'|'%'|'//'|'@') factor)*
 term
     : factor
     | factor term0
@@ -1003,6 +1004,10 @@ term0
     | '//' factor
         { loc = @$; $$ = function (left) { return {type:'binop', op:$1, left: left, right: $2, location: loc }; } }
     | '//' factor term0
+        { loc = @$; $$ = function (left) { return $3({type:'binop', op:$1, left: left, right: $2, location: loc }); } }
+    | '@' factor
+        { loc = @$; $$ = function (left) { return {type:'binop', op:$1, left: left, right: $2, location: loc }; } }
+    | '@' factor term0
         { loc = @$; $$ = function (left) { return $3({type:'binop', op:$1, left: left, right: $2, location: loc }); } }
     ;
 

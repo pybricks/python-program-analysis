@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added parsing support for PEP 465 matrix multiplication operators.
+
 ## 1.0.1
 
 ### Fixed

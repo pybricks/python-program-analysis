@@ -42,24 +42,6 @@ describe("python parser", () => {
     parse(["a = b\\", ".func(1, 2)\\", ".func(3, 4)", ""].join("\n"));
   });
 
-  it("can parse async def/await", () => {
-    const mod = parse(["async def test():", "    await other()"].join("\n"));
-    expect(mod.code[0].type).toBe("def");
-    walk(mod);
-  });
-
-  it("can parse async for", () => {
-    const mod = parse(["async for t in test():", "    other()"].join("\n"));
-    expect(mod.code[0].type).toBe("for");
-    walk(mod);
-  });
-
-  it("can parse async with", () => {
-    const mod = parse(["async with test() as t:", "    other()"].join("\n"));
-    expect(mod.code[0].type).toBe("with");
-    walk(mod);
-  });
-
   it("produces the full location of a line for a call statement", () => {
     let node = parse(["obj.func()", ""].join("\n")).code[0];
     expect(node.location).toEqual({
@@ -96,6 +78,38 @@ describe("python parser", () => {
     const docstring = def.code[0] as py.Literal;
     expect(docstring).toBeDefined();
     expect(docstring.type).toBe("literal");
+  });
+
+  describe("python 3.5 features", () => {
+    it("can parse async def/await", () => {
+      const mod = parse(["async def test():", "    await other()"].join("\n"));
+      expect(mod.code[0].type).toBe("def");
+      walk(mod);
+    });
+
+    it("can parse async for", () => {
+      const mod = parse(["async for t in test():", "    other()"].join("\n"));
+      expect(mod.code[0].type).toBe("for");
+      walk(mod);
+    });
+
+    it("can parse async with", () => {
+      const mod = parse(["async with test() as t:", "    other()"].join("\n"));
+      expect(mod.code[0].type).toBe("with");
+      walk(mod);
+    });
+
+    it("can parse matrix multiplication", () => {
+      const mod = parse("a @ b");
+      expect(mod.code[0].type).toBe("binop");
+      walk(mod);
+    });
+
+    it("can parse in place matrix multiplication", () => {
+      const mod = parse("a @= b");
+      expect(mod.code[0].type).toBe("assign");
+      walk(mod);
+    });
   });
 });
 
