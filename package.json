@@ -1,5 +1,5 @@
 {
-  "name": "@andrewhead/python-program-analysis",
+  "name": "@pybricks/python-program-analysis",
   "displayName": "Python parsing and program analysis",
   "main": "./dist/es5/index.js",
   "types": "./dist/es5/index.d.ts",
@@ -14,7 +14,7 @@
   "version": "0.4.8",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/andrewhead/python-program-analysis.git"
+    "url": "https://github.com/pybricks/python-program-analysis.git"
   },
   "scripts": {
     "build": "yarn run build:parser && tsc && tsc -m es6 --outDir dist/es6 && webpack",
@@ -45,10 +45,10 @@
   "dependencies": {
     "lodash": "^4.17.15"
   },
-  "description": "A Typescript library for parsing Python 3 and doing basic program analysis,  like forming control-flow graphs and def-use chains.",
+  "description": "A Typescript library for parsing Pybricks MicroPython programs.",
   "bugs": {
-    "url": "https://github.com/andrewhead/python-program-analysis/issues"
+    "url": "https://github.com/pybricks/python-program-analysis/issues"
   },
-  "homepage": "https://github.com/andrewhead/python-program-analysis#readme",
+  "homepage": "https://github.com/pybricks/python-program-analysis#readme",
   "author": ""
 }
