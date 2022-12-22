@@ -1,11 +1,11 @@
-import { ControlFlowGraph } from '../control-flow';
-import { Def, parse } from '../python-parser';
+import { ControlFlowGraph } from "../control-flow";
+import { Def, parse } from "../python-parser";
 
-describe('TypeTesting', () => {
-  it('tests types in code', () => {
-    let ast = parse(['def foo(n):', "    bar: str = 'foobar'"].join('\n'));
+describe("TypeTesting", () => {
+  it("tests types in code", () => {
+    let ast = parse(["def foo(n):", "    bar: str = 'foobar'"].join("\n"));
 
-    console.log(ast);
+    // console.log(ast);
 
     // expect(ast.code).toHaveLength(1);
     // expect(ast.code[0].type).toBe("def");
