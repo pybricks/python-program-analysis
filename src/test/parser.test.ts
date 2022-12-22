@@ -43,15 +43,21 @@ describe("python parser", () => {
   });
 
   it("can parse async def/await", () => {
-    parse(["async def test():", "    await other()"].join("\n"));
+    const mod = parse(["async def test():", "    await other()"].join("\n"));
+    expect(mod.code[0].type).toBe("def");
+    walk(mod);
   });
 
   it("can parse async for", () => {
-    parse(["async for t in test():", "    other()"].join("\n"));
+    const mod = parse(["async for t in test():", "    other()"].join("\n"));
+    expect(mod.code[0].type).toBe("for");
+    walk(mod);
   });
 
   it("can parse async with", () => {
-    parse(["async with test() as t:", "    other()"].join("\n"));
+    const mod = parse(["async with test() as t:", "    other()"].join("\n"));
+    expect(mod.code[0].type).toBe("with");
+    walk(mod);
   });
 
   it("produces the full location of a line for a call statement", () => {

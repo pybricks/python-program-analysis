@@ -269,9 +269,9 @@ funcdef
     | 'def' NAME parameters '->' test ':' suite
         { $$ = { type: 'def', name: $2, params: $3, code: $7, annot: $5, location: @$ } }
     | 'async' 'def' NAME parameters ':' suite
-        { $$ = { type: 'def', name: $2, params: $3, code: $5, location: @$ } }
+        { $$ = { type: 'def', name: $3, params: $4, code: $6, location: @$ } }
     | 'async' 'def' NAME parameters '->' test ':' suite
-        { $$ = { type: 'def', name: $2, params: $3, code: $7, annot: $5, location: @$ } }
+        { $$ = { type: 'def', name: $3, params: $4, code: $8, annot: $6, location: @$ } }
     ;
 
 // parameters: '(' [typedargslist] ')'
@@ -763,7 +763,7 @@ except_clause
         { $$ = { cond: $2, name: $4 } }
     ;
 
-// with_stmt: 'with' with_item (',' with_item)*  ':' suite
+// with_stmt: ['async'] 'with' with_item (',' with_item)*  ':' suite
 with_stmt
     : 'with' with_item ':' suite
         { $$ = { type: 'with',  items: [ $2 ], code: $4, location: @$ } }
@@ -773,11 +773,11 @@ with_stmt
             $$ = { type: 'with', items: $2, code: $5, location: @$ }
         }
     | 'async' 'with' with_item ':' suite
-        { $$ = { type: 'with',  items: [ $2 ], code: $4, location: @$ } }
+        { $$ = { type: 'with',  items: [ $3 ], code: $5, location: @$ } }
     | 'async' 'with' with_item with_stmt0 ':' suite
         {
-            $2 = [ $2 ].concat( $3 )
-            $$ = { type: 'with', items: $2, code: $5, location: @$ }
+            $3 = [ $3 ].concat( $4 )
+            $$ = { type: 'with', items: $3, code: $6, location: @$ }
         }
     ;
 
