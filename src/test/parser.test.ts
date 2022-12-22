@@ -42,13 +42,25 @@ describe("python parser", () => {
     parse(["a = b\\", ".func(1, 2)\\", ".func(3, 4)", ""].join("\n"));
   });
 
+  it("can parse async def/await", () => {
+    parse(["async def test():", "    await other()"].join("\n"));
+  });
+
+  it("can parse async for", () => {
+    parse(["async for t in test():", "    other()"].join("\n"));
+  });
+
+  it("can parse async with", () => {
+    parse(["async with test() as t:", "    other()"].join("\n"));
+  });
+
   it("produces the full location of a line for a call statement", () => {
     let node = parse(["obj.func()", ""].join("\n")).code[0];
     expect(node.location).toEqual({
       first_line: 1,
       first_column: 0,
       last_line: 1,
-      last_column: 10
+      last_column: 10,
     });
   });
 
@@ -65,7 +77,7 @@ describe("python parser", () => {
         "    this function",
         "    does nothing",
         '    """',
-        "    pass\n"
+        "    pass\n",
       ].join("\n")
     );
     expect(node).toBeDefined();

@@ -1,6 +1,6 @@
 /* Python Parser for Jison */
-/* https://docs.python.org/3.4/reference/lexical_analysis.html */
-/* https://docs.python.org/3.4/reference/grammar.html */
+/* https://docs.python.org/3/reference/lexical_analysis.html */
+/* https://docs.python.org/3/reference/grammar.html */
 
 /* lexical gammar */
 %lex
@@ -195,11 +195,11 @@ imagnumber              ({floatnumber}|{intpart})[jJ]
                         %}
 <INLINE>{identifier}    %{
                             const keywords = [
-                                "continue", "nonlocal", "finally", "lambda", "return", "assert",
-                                "global", "import", "except", "raise", "break", "False", "class",
-                                "while", "yield", "None", "True", "from", "with", "elif", "else",
-                                "pass", "for", "try", "def", "and", "del", "not", "is", "as", "if",
-                                "or", "in"
+                                "False", "None", "True", "and", "as", "assert", "async",
+                                "await", "break", "class", "continue", "def", "del", "elif",
+                                "else", "except", "finally", "for", "from", "global", "if",
+                                "import", "in", "is", "lambda", "nonlocal", "not", "or",
+                                "pass", "raise", "return", "try", "while", "with", "yield"
                             ]
                             return ( keywords.indexOf( yytext ) == -1 )
                                 ? 'NAME'
@@ -262,11 +262,15 @@ decorated
         { $$ = { type: 'decorate', decorators: $1, def: $2, location: @$ } }
     ;
 
-// funcdef: 'def' NAME parameters ['->' test] ':' suite
+// funcdef: ['async'] 'def' NAME parameters ['->' test] ':' suite
 funcdef
     : 'def' NAME parameters ':' suite
         { $$ = { type: 'def', name: $2, params: $3, code: $5, location: @$ } }
     | 'def' NAME parameters '->' test ':' suite
+        { $$ = { type: 'def', name: $2, params: $3, code: $7, annot: $5, location: @$ } }
+    | 'async' 'def' NAME parameters ':' suite
+        { $$ = { type: 'def', name: $2, params: $3, code: $5, location: @$ } }
+    | 'async' 'def' NAME parameters '->' test ':' suite
         { $$ = { type: 'def', name: $2, params: $3, code: $7, annot: $5, location: @$ } }
     ;
 
@@ -687,7 +691,7 @@ while_stmt
         { $$ = { type: 'while',  cond: $2, code: $4, else: $7, location: @$ } }
     ;
 
-// for_stmt: 'for' exprlist 'in' testlist ':' suite ['else' ':' suite]
+// for_stmt: ['async'] 'for' exprlist 'in' testlist ':' suite ['else' ':' suite]
 for_stmt
     : 'for' exprlist 'in' testlist colon suite
         { $$ = { type: 'for',  target: $2, iter: $4, code: $6, location: @$,
@@ -704,6 +708,22 @@ for_stmt
                 first_column: @$.first_column,
                 last_line: $5.location.last_line,
                 last_column: $5.location.last_column
+            } } }
+    | 'async' 'for' exprlist 'in' testlist colon suite
+        { $$ = { type: 'for',  target: $3, iter: $5, code: $7, location: @$,
+            decl_location: {
+                first_line: @$.first_line,
+                first_column: @$.first_column,
+                last_line: $6.location.last_line,
+                last_column: $6.location.last_column
+            } } }
+    | 'async' 'for' exprlist 'in' testlist colon suite 'else' ':' suite
+        { $$ = { type: 'for',  target: $3, iter: $5, code: $7, else: $10, location: @$,
+            decl_location: {
+                first_line: @$.first_line,
+                first_column: @$.first_column,
+                last_line: $6.location.last_line,
+                last_column: $6.location.last_column
             } } }
     ;
 
@@ -748,6 +768,13 @@ with_stmt
     : 'with' with_item ':' suite
         { $$ = { type: 'with',  items: [ $2 ], code: $4, location: @$ } }
     | 'with' with_item with_stmt0 ':' suite
+        {
+            $2 = [ $2 ].concat( $3 )
+            $$ = { type: 'with', items: $2, code: $5, location: @$ }
+        }
+    | 'async' 'with' with_item ':' suite
+        { $$ = { type: 'with',  items: [ $2 ], code: $4, location: @$ } }
+    | 'async' 'with' with_item with_stmt0 ':' suite
         {
             $2 = [ $2 ].concat( $3 )
             $$ = { type: 'with', items: $2, code: $5, location: @$ }
@@ -990,11 +1017,17 @@ factor
     | power
     ;
 
-// power: atom trailer* ['**' factor]
+// power: await_atom_expr trailer* ['**' factor]
 power
-    : atom_expr
-    | atom_expr '**' factor
+    : await_atom_expr
+    | await_atom_expr '**' factor
         { $$ = {type: 'binop', op:$2, left: $1, right: $3, location: @$} }
+    ;
+
+// await_atom_expr: ['await'] atom
+await_atom_expr
+    : 'await' atom_expr
+    | atom_expr
     ;
 
 trailer_list
