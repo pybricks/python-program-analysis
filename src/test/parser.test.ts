@@ -157,6 +157,14 @@ describe('python parser', () => {
       }
     );
   });
+
+  describe('Python 3.8 features', () => {
+    it('can parse positional only arguments', () => {
+      const mod = parse(['def test(a, b, /):', '    other()'].join('\n'));
+      expect(mod.code[0].type).toBe('def');
+      walk(mod);
+    });
+  });
 });
 
 describe('ast walker', () => {

@@ -299,6 +299,8 @@ typedarglist_part
     : tfpdef
     | tfpdef '=' test
         { $1.default = $3; $$ = $1 }
+    | '/'
+        { $$ = { name: '', slash: true, location: @$ } }
     | '*'
         { $$ = { name: '', star: true, location: @$ } }
     | '*' tfpdef
