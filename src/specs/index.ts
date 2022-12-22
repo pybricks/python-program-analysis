@@ -1,9 +1,9 @@
-import * as builtins from "./__builtins__.json";
-import * as random from "./random.json";
-import * as matplotlib from "./matplotlib.json";
-import * as pandas from "./pandas.json";
-import * as sklearn from "./sklearn.json";
-import * as numpy from "./numpy.json";
+import * as builtins from './__builtins__.json';
+import * as random from './random.json';
+import * as matplotlib from './matplotlib.json';
+import * as pandas from './pandas.json';
+import * as sklearn from './sklearn.json';
+import * as numpy from './numpy.json';
 
 export interface FunctionSpec {
   name: string;
@@ -38,5 +38,5 @@ export const DefaultSpecs: JsonSpecs = {
   ...matplotlib,
   ...pandas,
   ...sklearn,
-  ...numpy
+  ...numpy,
 };

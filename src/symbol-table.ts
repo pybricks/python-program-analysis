@@ -4,9 +4,9 @@ import {
   JsonSpecs,
   ModuleMap,
   ModuleSpec,
-  TypeSpec
-} from ".";
-import * as ast from "./python-parser";
+  TypeSpec,
+} from '.';
+import * as ast from './python-parser';
 
 function mapDict<U, V>(
   obj: { [item: string]: U },
@@ -18,7 +18,7 @@ function mapDict<U, V>(
 }
 
 function cleanFunc(fdesc: FunctionDescription): FunctionSpec {
-  if (typeof fdesc === "string") {
+  if (typeof fdesc === 'string') {
     return { name: fdesc, reads: [], updates: [] };
   } else {
     if (!fdesc.reads) {
@@ -35,7 +35,7 @@ function cleanType(
   tdesc: TypeSpec<FunctionDescription>
 ): TypeSpec<FunctionSpec> {
   return {
-    methods: tdesc.methods ? tdesc.methods.map(m => cleanFunc(m)) : []
+    methods: tdesc.methods ? tdesc.methods.map(m => cleanFunc(m)) : [],
   };
 }
 
@@ -45,7 +45,7 @@ function cleanModule(
   const mod: ModuleSpec<FunctionSpec> = {
     functions: mdesc.functions ? mdesc.functions.map(f => cleanFunc(f)) : [],
     types: mdesc.types ? mapDict(mdesc.types, cleanType) : {},
-    modules: mdesc.modules ? mapDict(mdesc.modules, cleanModule) : {}
+    modules: mdesc.modules ? mapDict(mdesc.modules, cleanModule) : {},
   };
   mod.functions.forEach(f => {
     if (f.returns) {
@@ -70,7 +70,7 @@ export class SymbolTable {
 
   constructor(private jsonSpecs: JsonSpecs) {
     // preload all the built-in functions.
-    this.importModuleDefinitions("__builtins__", [{ path: "*", name: "" }]);
+    this.importModuleDefinitions('__builtins__', [{ path: '*', name: '' }]);
   }
 
   public lookupFunction(name: string) {
@@ -81,11 +81,11 @@ export class SymbolTable {
     const clss = this.types[name];
     if (clss) {
       return (
-        clss.methods.find(fn => fn.name === "__init__") || {
-          name: "__init__",
-          updates: ["0"],
+        clss.methods.find(fn => fn.name === '__init__') || {
+          name: '__init__',
+          updates: ['0'],
           returns: name,
-          returnsType: clss
+          returnsType: clss,
         }
       );
     }
@@ -109,7 +109,7 @@ export class SymbolTable {
     modulePath: string,
     alias: string
   ): ModuleSpec<FunctionSpec> {
-    const spec = this.lookupSpec(this.jsonSpecs, modulePath.split("."));
+    const spec = this.lookupSpec(this.jsonSpecs, modulePath.split('.'));
     if (!spec) {
       console.log(`*** WARNING no spec for module ${modulePath}`);
       return;
@@ -126,7 +126,7 @@ export class SymbolTable {
     namePath: string,
     imports: { path: string; name: string }[]
   ): ModuleSpec<FunctionSpec> {
-    const spec = this.lookupSpec(this.jsonSpecs, namePath.split("."));
+    const spec = this.lookupSpec(this.jsonSpecs, namePath.split('.'));
     if (!spec) {
       console.log(`*** WARNING no spec for module ${namePath}`);
       return;
@@ -136,7 +136,7 @@ export class SymbolTable {
         const funs = spec.functions
           ? spec.functions.map(f => cleanFunc(f))
           : [];
-        if (imp.path === "*") {
+        if (imp.path === '*') {
           funs.forEach(f => (this.functions[f.name] = f));
           if (spec.types) {
             Object.keys(spec.types).forEach(

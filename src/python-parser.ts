@@ -6,7 +6,7 @@ import { printNode } from './printNode';
  */
 let yy = parser.yy as any;
 let oldParseError = yy.parseError;
-oldParseError = function (text: String, hash: any) {
+oldParseError = function(text: String, hash: any) {
   this.indents = [0];
   this.indent = 0;
   this.dedents = 0;
@@ -86,9 +86,10 @@ export interface Location extends JisonLocation {
 }
 
 export function locationString(loc: Location) {
-  return `${loc.path}${loc.last_line}:${loc.first_column}-${loc.last_line}:${loc.last_column}`;
+  return `${loc.path}${loc.last_line}:${loc.first_column}-${loc.last_line}:${
+    loc.last_column
+  }`;
 }
-
 
 // loc2 is inside loc1
 export function locationContains(loc1: Location, loc2: Location) {

@@ -11,7 +11,6 @@ import { Graph } from './graph';
 export type CellToLineMap = { [cellExecutionEventId: string]: NumberSet };
 export type LineToCellMap = { [line: number]: Cell };
 
-
 const magicsRewriter: MagicsRewriter = new MagicsRewriter();
 
 /**
@@ -49,10 +48,14 @@ export class Program {
       // This includes resetting the locations of all of the nodes in the tree,
       // relative to the cells that come before this one.
       // This can be sped up by saving this computation.
-      this.tree.code.push(...shiftStatementLines(cp.statements, Math.min(...cellLines) - 1));
+      this.tree.code.push(
+        ...shiftStatementLines(cp.statements, Math.min(...cellLines) - 1)
+      );
     });
 
-    this.text = cellPrograms.map(cp => magicsRewriter.rewrite(cp.cell.text + '\n')).join('');
+    this.text = cellPrograms
+      .map(cp => magicsRewriter.rewrite(cp.cell.text + '\n'))
+      .join('');
   }
 
   readonly text: string;
@@ -61,7 +64,10 @@ export class Program {
   readonly lineToCellMap: LineToCellMap = {};
 }
 
-function shiftStatementLines(stmts: ast.SyntaxNode[], delta: number): ast.SyntaxNode[] {
+function shiftStatementLines(
+  stmts: ast.SyntaxNode[],
+  delta: number
+): ast.SyntaxNode[] {
   return stmts.map(statement => {
     let statementCopy: ast.SyntaxNode = JSON.parse(JSON.stringify(statement));
     for (let node of ast.walk(statementCopy)) {
@@ -81,11 +87,9 @@ function shiftLines(loc: ast.Location, delta: number): ast.Location {
     first_line: loc.first_line + delta,
     first_column: loc.first_column,
     last_line: loc.last_line + delta,
-    last_column: loc.last_column
+    last_column: loc.last_column,
   });
 }
-
-
 
 /**
  * Program fragment for a cell. Used to cache parsing results.
@@ -159,7 +163,10 @@ export class ProgramBuilder {
           defs = [];
           uses = [];
           for (let stmt of tree.code) {
-            let defsUses = this._dataflowAnalyzer.getDefUseForStatement(stmt, new RefSet());
+            let defsUses = this._dataflowAnalyzer.getDefUseForStatement(
+              stmt,
+              new RefSet()
+            );
             defs.push(...defsUses.DEFINITION.union(defsUses.UPDATE).items);
             uses.push(...defsUses.USE.items);
           }
@@ -198,7 +205,12 @@ export class ProgramBuilder {
   public buildTo(cellExecutionEventId: string): Program {
     let cellPrograms: CellProgram[] = [];
     let i: number;
-    for (i = this._cellPrograms.length - 1; i >= 0 && this._cellPrograms[i].cell.executionEventId !== cellExecutionEventId; i--);
+    for (
+      i = this._cellPrograms.length - 1;
+      i >= 0 &&
+      this._cellPrograms[i].cell.executionEventId !== cellExecutionEventId;
+      i--
+    );
     cellPrograms.unshift(this._cellPrograms[i]);
     let lastExecutionCountSeen = this._cellPrograms[i].cell.executionCount;
     for (i--; i >= 0; i--) {
@@ -217,21 +229,30 @@ export class ProgramBuilder {
 
   public buildFrom(executionEventId: string): Program {
     const cellProgram = this.getCellProgram(executionEventId);
-    if (!cellProgram) { return null; }
-    const i = this._cellPrograms.findIndex(cp => cp.cell.persistentId === cellProgram.cell.persistentId);
+    if (!cellProgram) {
+      return null;
+    }
+    const i = this._cellPrograms.findIndex(
+      cp => cp.cell.persistentId === cellProgram.cell.persistentId
+    );
     return new Program(this._cellPrograms.slice(i));
   }
 
-
   public getCellProgram(executionEventId: string): CellProgram {
-    let matchingPrograms = this._cellPrograms.filter(cp => cp.cell.executionEventId == executionEventId);
-    if (matchingPrograms.length >= 1) { return matchingPrograms.pop(); }
+    let matchingPrograms = this._cellPrograms.filter(
+      cp => cp.cell.executionEventId == executionEventId
+    );
+    if (matchingPrograms.length >= 1) {
+      return matchingPrograms.pop();
+    }
     return null;
   }
 
   public getCellProgramsWithSameId(executionEventId: string): CellProgram[] {
     const cellProgram = this.getCellProgram(executionEventId);
-    return this._cellPrograms.filter(cp => cp.cell.persistentId === cellProgram.cell.persistentId);
+    return this._cellPrograms.filter(
+      cp => cp.cell.persistentId === cellProgram.cell.persistentId
+    );
   }
 
   private _cellPrograms: CellProgram[];

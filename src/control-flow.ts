@@ -9,7 +9,7 @@ export class Block {
     public readonly hint: string,
     public statements: ast.SyntaxNode[],
     public loopVariables: ast.SyntaxNode[] = []
-  ) { }
+  ) {}
 
   public toString(): string {
     return (
@@ -32,7 +32,7 @@ class Context {
     public loopHead: Block,
     public loopExit: Block,
     public exceptionBlock: Block
-  ) { }
+  ) {}
   public forLoop(loopHead: Block, loopExit: Block): Context {
     return new Context(loopHead, loopExit, this.exceptionBlock);
   }
@@ -359,7 +359,9 @@ export class ControlFlowGraph {
    * - p498-500: dominator trees and frontiers
    * - p544: postdominance and reverse dominance frontier
    */
-  public visitControlDependencies(visit: (controlStmt: ast.SyntaxNode, stmt: ast.SyntaxNode) => void) {
+  public visitControlDependencies(
+    visit: (controlStmt: ast.SyntaxNode, stmt: ast.SyntaxNode) => void
+  ) {
     let blocks = this.blocks;
 
     this.postdominators = this.findPostdominators(blocks);

@@ -1,9 +1,9 @@
-import _ from "lodash";
-import { Block, ControlFlowGraph } from "./control-flow";
-import * as ast from "./python-parser";
-import { Set } from "./set";
-import { DefaultSpecs, FunctionSpec, JsonSpecs, TypeSpec } from "./specs";
-import { SymbolTable } from "./symbol-table";
+import _ from 'lodash';
+import { Block, ControlFlowGraph } from './control-flow';
+import * as ast from './python-parser';
+import { Set } from './set';
+import { DefaultSpecs, FunctionSpec, JsonSpecs, TypeSpec } from './specs';
+import { SymbolTable } from './symbol-table';
 
 class DefUse {
   constructor(
@@ -31,7 +31,7 @@ class DefUse {
     const GEN_RULES = {
       USE: [ReferenceType.UPDATE, ReferenceType.DEFINITION],
       UPDATE: [ReferenceType.DEFINITION],
-      DEFINITION: []
+      DEFINITION: [],
     };
 
     const KILL_RULES = {
@@ -43,7 +43,7 @@ class DefUse {
       // it neither depends on initializations or updates, nor clobbers them.
       DEFINITION: [ReferenceType.DEFINITION, ReferenceType.UPDATE],
       UPDATE: [ReferenceType.DEFINITION, ReferenceType.UPDATE],
-      USE: []
+      USE: [],
     };
 
     for (let level of Object.keys(ReferenceType)) {
@@ -84,7 +84,7 @@ class DefUse {
               fromNode: from.node,
               toNode: to.node,
               fromRef: from,
-              toRef: to
+              toRef: to,
             });
           }
         }
@@ -117,8 +117,8 @@ export interface DataflowAnalyzerOptions {
 const defaultDataflowAnalyzerOptions: DataflowAnalyzerOptions = {
   symbolTable: {
     loadDefaultModuleMap: true,
-    moduleMap: {}
-  }
+    moduleMap: {},
+  },
 };
 
 /**
@@ -257,7 +257,7 @@ export class DataflowAnalyzer {
       level: ReferenceType.DEFINITION,
       name: classDecl.name,
       location: classDecl.location,
-      node: classDecl
+      node: classDecl,
     });
   }
 
@@ -274,7 +274,7 @@ export class DataflowAnalyzer {
       level: ReferenceType.DEFINITION,
       name: funcDecl.name,
       location: funcDecl.location,
-      node: funcDecl
+      node: funcDecl,
     });
   }
 
@@ -292,7 +292,7 @@ export class DataflowAnalyzer {
           level: ReferenceType.DEFINITION,
           name: i.name || i.path,
           location: i.location,
-          node: from
+          node: from,
         };
       })
     );
@@ -309,7 +309,7 @@ export class DataflowAnalyzer {
           level: ReferenceType.DEFINITION,
           name: nameNode.name || nameNode.path,
           location: nameNode.location,
-          node: imprt
+          node: imprt,
         };
       })
     );
@@ -338,7 +338,7 @@ export class DataflowAnalyzer {
           level: ReferenceType.USE,
           name: name,
           location: node.location,
-          node: statement
+          node: statement,
         };
       })
     );
@@ -368,7 +368,7 @@ export class DataflowAnalyzer {
           level: ReferenceType.USE,
           name: name,
           location: node.location,
-          node: assign
+          node: assign,
         };
       })
     );
@@ -380,7 +380,7 @@ export class DataflowAnalyzer {
           level: ReferenceType.USE,
           name: name,
           location: node.location,
-          node: assign
+          node: assign,
         };
       })
     );
@@ -399,9 +399,9 @@ export interface Dataflow {
 }
 
 export enum ReferenceType {
-  DEFINITION = "DEFINITION",
-  UPDATE = "UPDATE",
-  USE = "USE"
+  DEFINITION = 'DEFINITION',
+  UPDATE = 'UPDATE',
+  USE = 'USE',
 }
 
 export enum SymbolType {
@@ -410,7 +410,7 @@ export enum SymbolType {
   FUNCTION,
   IMPORT,
   MUTATION,
-  MAGIC
+  MAGIC,
 }
 
 export interface Ref {
@@ -438,7 +438,7 @@ export function sameLocation(loc1: ast.Location, loc2: ast.Location): boolean {
 }
 
 function getNameSetId([name, node]: [string, ast.SyntaxNode]) {
-  if (!node.location) console.log("***", node);
+  if (!node.location) console.log('***', node);
   return `${name}@${ast.locationString(node.location)}`;
 }
 
@@ -498,7 +498,7 @@ class DefAnnotationAnalysis extends AnalysisWalker {
       let literal = node as ast.Literal;
 
       // If this is a string, try to parse a def annotation from it
-      if (typeof literal.value == "string" || literal.value instanceof String) {
+      if (typeof literal.value == 'string' || literal.value instanceof String) {
         let string = literal.value;
         let jsonMatch = string.match(/"defs: (.*)"/);
         if (jsonMatch && jsonMatch.length >= 2) {
@@ -515,9 +515,9 @@ class DefAnnotationAnalysis extends AnalysisWalker {
                   first_line: defSpec.pos[0][0] + node.location.first_line,
                   first_column: defSpec.pos[0][1],
                   last_line: defSpec.pos[1][0] + node.location.first_line,
-                  last_column: defSpec.pos[1][1]
+                  last_column: defSpec.pos[1][1],
                 },
-                node: this._statement
+                node: this._statement,
               });
             }
           } catch (e) {}
@@ -573,7 +573,7 @@ class ApiCallAnalysis extends AnalysisWalker {
     if (funcSpec && funcSpec.updates) {
       funcSpec.updates.forEach(paramName => {
         const position =
-          typeof paramName === "string" ? parseInt(paramName) : paramName;
+          typeof paramName === 'string' ? parseInt(paramName) : paramName;
         if (isNaN(position)) {
           return;
         } // TODO: think about mutation of global variables
@@ -596,7 +596,7 @@ class ApiCallAnalysis extends AnalysisWalker {
             level: ReferenceType.UPDATE,
             name: actualArgName,
             location: node.location,
-            node: this._statement
+            node: this._statement,
           });
         }
       });
@@ -610,7 +610,7 @@ class ApiCallAnalysis extends AnalysisWalker {
             level: ReferenceType.UPDATE,
             name: name,
             location: node.location,
-            node: this._statement
+            node: this._statement,
           });
         }
       });
@@ -621,7 +621,7 @@ class ApiCallAnalysis extends AnalysisWalker {
           level: ReferenceType.UPDATE,
           name: name,
           location: node.location,
-          node: this._statement
+          node: this._statement,
         });
       }
     }
@@ -672,7 +672,7 @@ class TargetsDefListener extends AnalysisWalker {
         level: isUpdate ? ReferenceType.UPDATE : ReferenceType.DEFINITION,
         location: target.location,
         name: target.id,
-        node: this._statement
+        node: this._statement,
       });
     }
   }
@@ -693,7 +693,7 @@ class ParameterSideEffectAnalysis extends AnalysisWalker {
     this.flows = this.getTransitiveClosure(this.flows);
     this.symbolTable.functions[def.name] = this.spec = {
       name: def.name,
-      updates: []
+      updates: [],
     };
   }
 
@@ -758,7 +758,7 @@ class ParameterSideEffectAnalysis extends AnalysisWalker {
                 f.toRef !== undefined
             );
             const updates = funcSpec.updates.filter(
-              u => typeof u === "number"
+              u => typeof u === 'number'
             ) as number[];
             if (
               updates.length > 0 &&
@@ -805,7 +805,7 @@ function getParameterRefs(def: ast.Def) {
       level: ReferenceType.DEFINITION,
       type: SymbolType.VARIABLE,
       location: p.location,
-      node: p
+      node: p,
     }))
   );
 }
@@ -816,10 +816,10 @@ function getNodeId(node: ast.SyntaxNode) {
 
 function getDataflowId(df: Dataflow) {
   if (!df.fromNode.location) {
-    console.log("*** FROM", df.fromNode, df.fromNode.location);
+    console.log('*** FROM', df.fromNode, df.fromNode.location);
   }
   if (!df.toNode.location) {
-    console.log("*** TO", df.toNode, df.toNode.location);
+    console.log('*** TO', df.toNode, df.toNode.location);
   }
   return `${getNodeId(df.fromNode)}->${getNodeId(df.toNode)}`;
 }

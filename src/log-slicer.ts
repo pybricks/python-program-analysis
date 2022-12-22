@@ -1,9 +1,9 @@
-import { Cell } from "./cell";
-import { CellSlice } from "./cellslice";
-import { DataflowAnalyzer } from "./data-flow";
-import { CellProgram, ProgramBuilder } from "./program-builder";
-import { NumberSet, Set } from "./set";
-import { LocationSet, slice, SliceDirection } from "./slice";
+import { Cell } from './cell';
+import { CellSlice } from './cellslice';
+import { DataflowAnalyzer } from './data-flow';
+import { CellProgram, ProgramBuilder } from './program-builder';
+import { NumberSet, Set } from './set';
+import { LocationSet, slice, SliceDirection } from './slice';
 
 /**
  * A record of when a cell was executed.
@@ -159,7 +159,7 @@ export class ExecutionLogSlicer<TCell extends Cell> {
             first_line: 1,
             first_column: 1,
             last_line: 10000,
-            last_column: 10000
+            last_column: 10000,
           });
         }
 
@@ -171,7 +171,7 @@ export class ExecutionLogSlicer<TCell extends Cell> {
           first_line: lastCellStart + loc.first_line - 1,
           first_column: loc.first_column,
           last_line: lastCellStart + loc.last_line - 1,
-          last_column: loc.last_column
+          last_column: loc.last_column,
         }));
 
         // Slice the program
@@ -198,7 +198,7 @@ export class ExecutionLogSlicer<TCell extends Cell> {
             first_line: location.first_line - sliceCellStart + 1,
             first_column: location.first_column,
             last_line: location.last_line - sliceCellStart + 1,
-            last_column: location.last_column
+            last_column: location.last_column,
           };
           if (!cellSliceLocations[sliceCell.executionEventId]) {
             cellSliceLocations[sliceCell.executionEventId] = new LocationSet();
@@ -251,7 +251,7 @@ export class ExecutionLogSlicer<TCell extends Cell> {
         first_line: line,
         first_column: 0,
         last_line: line,
-        last_column: 1
+        last_column: 1,
       }))
     );
     let sliceLocations = slice(

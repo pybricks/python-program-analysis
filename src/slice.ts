@@ -3,7 +3,6 @@ import { ControlFlowGraph } from './control-flow';
 import { DataflowAnalyzer } from './data-flow';
 import { NumberSet, range, Set } from './set';
 
-
 function lineRange(loc: Location): NumberSet {
   return range(loc.first_line, loc.last_line + (loc.last_column ? 1 : 0));
 }
@@ -67,7 +66,10 @@ function intersect(l1: Location, l2: Location): boolean {
   );
 }
 
-export enum SliceDirection { Forward, Backward }
+export enum SliceDirection {
+  Forward,
+  Backward,
+}
 
 /**
  * More general slice: given locations of important syntax nodes, find locations of all relevant
@@ -89,7 +91,8 @@ export function slice(
   let sliceLocations = new LocationSet();
   if (seedLocations) {
     let seedStatementLocations = findSeedStatementLocations(seedLocations, cfg);
-    acceptLocation = loc => seedStatementLocations.some(seedStmtLoc => intersect(seedStmtLoc, loc));
+    acceptLocation = loc =>
+      seedStatementLocations.some(seedStmtLoc => intersect(seedStmtLoc, loc));
     sliceLocations = new LocationSet(...seedStatementLocations.items);
   }
 
@@ -97,9 +100,10 @@ export function slice(
   do {
     lastSize = sliceLocations.size;
     for (let flow of dfa.items) {
-      const [start, end] = direction === SliceDirection.Backward ?
-        [flow.fromNode.location, flow.toNode.location] :
-        [flow.toNode.location, flow.fromNode.location];
+      const [start, end] =
+        direction === SliceDirection.Backward
+          ? [flow.fromNode.location, flow.toNode.location]
+          : [flow.toNode.location, flow.fromNode.location];
       if (acceptLocation(end)) {
         sliceLocations.add(end);
       }
@@ -112,8 +116,10 @@ export function slice(
   return sliceLocations;
 }
 
-
-function findSeedStatementLocations(seedLocations: LocationSet, cfg: ControlFlowGraph) {
+function findSeedStatementLocations(
+  seedLocations: LocationSet,
+  cfg: ControlFlowGraph
+) {
   let seedStatementLocations = new LocationSet();
   seedLocations.items.forEach(seedLoc => {
     for (let block of cfg.blocks) {

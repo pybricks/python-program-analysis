@@ -23,7 +23,9 @@ export class Set<T> {
   }
 
   public pop(): T {
-    if (this.empty) { throw 'empty'; }
+    if (this.empty) {
+      throw 'empty';
+    }
     const someKey = Object.keys(this._items)[0];
     const result = this._items[someKey];
     this.remove(result);
@@ -39,9 +41,7 @@ export class Set<T> {
   }
 
   public equals(that: Set<T>): boolean {
-    return (
-      this.size == that.size && this.items.every(item => that.has(item))
-    );
+    return this.size == that.size && this.items.every(item => that.has(item));
   }
 
   public get empty(): boolean {
@@ -82,10 +82,7 @@ export class Set<T> {
   }
 
   public minus(that: Set<T>): Set<T> {
-    return new Set(
-      this.getIdentifier,
-      ...this.items.filter(x => !that.has(x))
-    );
+    return new Set(this.getIdentifier, ...this.items.filter(x => !that.has(x)));
   }
 
   public take(): T {
@@ -101,8 +98,10 @@ export class Set<T> {
   public product(that: Set<T>): Set<[T, T]> {
     return new Set(
       ([x, y]) => this.getIdentifier(x) + that.getIdentifier(y),
-      ...flatten(...this.items.map(x =>
-        flatten(that.items.map<[T, T]>(y => [x, y])))));
+      ...flatten(
+        ...this.items.map(x => flatten(that.items.map<[T, T]>(y => [x, y])))
+      )
+    );
   }
 }
 
@@ -125,7 +124,6 @@ export function range(min: number, max: number): Set<number> {
   }
   return new NumberSet(...numbers);
 }
-
 
 function flatten<T>(...items: T[][]): T[] {
   return [].concat(...items);

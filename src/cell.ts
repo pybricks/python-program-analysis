@@ -1,9 +1,7 @@
-
 /**
  * Generic interface for accessing data about a code cell.
  */
 export interface Cell {
-
   /**
    * The cell's current text.
    */
