@@ -127,6 +127,18 @@ describe('python parser', () => {
   });
 
   describe('Python 3.6 features', () => {
+    it.each([
+      'f"hi {name}"',
+      `f'{"quoted string"}'`,
+      `f'{{ {4*10} }}'`,
+      `f'{{{4*10}}}'`,
+      `fr'x={4*10}\\n'`,
+    ])('can parse f-strings', code => {
+      const mod = parse(code);
+      expect(mod.code[0].type).toBe('literal');
+      walk(mod);
+    });
+
     it.each(['10_000_000.0', '0xCAFE_F00D', '0b_0011_1111_0100_1110'])(
       'can parse underscores in numeric literals',
       code => {
