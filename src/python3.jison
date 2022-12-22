@@ -395,6 +395,8 @@ assignlist
         { $$ = { targets: [], sources: $2 } }
     | '=' testlist_star_expr assignlist
         { $$ = { targets: $2.concat($3.targets), sources: $3.sources } }
+    | ':' test
+        { $$ = { targets: [], sources: [] } }
     | ':' test '=' yield_expr
         { $$ = { targets: [], sources: [$4] } }
     | ':' test '=' yield_expr assignlist

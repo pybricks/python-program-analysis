@@ -147,6 +147,15 @@ describe('python parser', () => {
         walk(mod);
       }
     );
+
+    it.each(['a: int', 'a: int = 1'])(
+      'can parse variable annotations',
+      code => {
+        const mod = parse(code);
+        expect(mod.code[0].type).toBe('assign');
+        walk(mod);
+      }
+    );
   });
 });
 
