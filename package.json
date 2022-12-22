@@ -12,7 +12,7 @@
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/pybricks/python-program-analysis.git"
