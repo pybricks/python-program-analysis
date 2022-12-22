@@ -110,6 +110,20 @@ describe('python parser', () => {
       expect(mod.code[0].type).toBe('assign');
       walk(mod);
     });
+
+    it.each([
+      ['print(*[1], *[2], 3)', 'call'],
+      ["dict(**{'x': 1}, y=2, **{'z': 3})", 'call'],
+      ['*range(4), 4', 'tuple'],
+      ['[*range(4), 4]', 'list'],
+      ['{*range(4), 4}', 'set'],
+      ["{'x': 1, **{'y': 2}}", 'dict'],
+      ["{**{'y': 2}, 'x': 1}", 'dict'],
+    ])('can parse unpacking generalizations', (code, type) => {
+      const mod = parse(code);
+      expect(mod.code[0].type).toBe(type);
+      walk(mod);
+    });
   });
 });
 

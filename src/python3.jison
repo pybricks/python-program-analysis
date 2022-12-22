@@ -897,6 +897,12 @@ comp_op: '<'|'>'|'=='|'>='|'<='|'!='
         { $$ = $1+$2 }
     ;
 
+// double_star_expr: '**' expr
+double_star_expr
+    : '**' expr
+        { $$ = { type:'double-starred', value: $1, location: @$ } }
+    ;
+
 // star_expr: '*' expr
 star_expr
     : '*' expr
@@ -1246,17 +1252,23 @@ testlist0
         { $$ = [ $2 ].concat( $3 ) }
     ;
 
-// dictorsetmaker: ( (test ':' test (comp_for | (',' test ':' test)* [','])) |
-//   (test (comp_for | (',' test)* [','])) )
+// dictorsetmaker: (((kvpair | double_star_expr) (comp_for | (',' (kvpair | double_star_expr))* [','])) |
+//   ((test | star_expr) (comp_for | (',' (test | star_expr))* [','])) )
 dictorsetmaker
-    : test ':' test
-        { $$ = { type: 'dict', entries: [{ k: $1, v: $3 }], location: @$ } }
-    | test ':' test ','
-        { $$ = { type: 'dict', entries: [{ k: $1, v: $3 }], location: @$ } }
-    | test ':' test comp_for
-        { $$ = { type: 'dict', entries: [{ k: $1, v: $3 }], comp_for: $4, location: @$ } }
-    | test ':' test dictmaker
-        { $$ = { type: 'dict', entries: [{ k: $1, v: $3 }].concat( $4 ), location: @$ } }
+    : kvpair
+        { $$ = { type: 'dict', entries: [ $1 ], location: @$ } }
+    | kvpair ','
+        { $$ = { type: 'dict', entries: [ $1 ], location: @$ } }
+    | kvpair comp_for
+        { $$ = { type: 'dict', entries: [ $1 ], comp_for: $2, location: @$ } }
+    | kvpair dictmaker
+        { $$ = { type: 'dict', entries: [ $1 ].concat( $2 ), location: @$ } }
+    | double_star_expr
+        { $$ = { type: 'dict', entries: [ $1 ], location: @$ } }
+    | double_star_expr','
+        { $$ = { type: 'dict', entries: [ $1 ], location: @$ } }
+    | double_star_expr dictmaker
+        { $$ = { type: 'dict', entries: [ $1 ].concat( $2 ), location: @$ } }
     | test
         { $$ = { type: 'set', entries: [ $1 ], location: @$ } }
     | test ','
@@ -1265,15 +1277,32 @@ dictorsetmaker
         { $$ = { type: 'set', entries: [ $1 ], comp_for: $2, location: @$ } }
     | test setmaker
         { $$ = { type: 'set', entries: [ $1 ].concat( $2 ), location: @$ } }
+    | star_expr
+        { $$ = { type: 'set', entries: [ $1 ], location: @$ } }
+    | star_expr ','
+        { $$ = { type: 'set', entries: [ $1 ], location: @$ } }
+    | star_expr setmaker
+        { $$ = { type: 'set', entries: [ $1 ].concat( $2 ), location: @$ } }
+    ;
+
+kvpair
+    : test ':' test
+        { $$ = { type: 'key-value-pair', key: $1, value: $3, location: @$ } }
     ;
 
 dictmaker
-    : ',' test ':' test
-        { $$ = [{ k: $2, v: $4 }] }
-    | ',' test ':' test ','
-        { $$ = [{ k: $2, v: $4 }] }
-    | ',' test ':' test dictmaker
-        { $$ = [{ k: $2, v: $4 }].concat( $5 ) }
+    : ',' kvpair
+        { $$ = [$2] }
+    | ',' kvpair ','
+        { $$ = [$2] }
+    | ',' kvpair dictmaker
+        { $$ = [$2].concat( $3 ) }
+    | ',' double_star_expr
+        { $$ = [ $2 ] }
+    | ',' double_star_expr ','
+        { $$ = [ $2 ] }
+    | ',' double_star_expr dictmaker
+        { $$ = [ $2 ].concat( $3 ) }
     ;
 
 setmaker
@@ -1282,6 +1311,12 @@ setmaker
     | ',' test ','
         { $$ = [ $2 ] }
     | ',' test setmaker
+        { $$ = [ $2 ].concat( $3 ) }
+    | ',' star_expr
+        { $$ = [ $2 ] }
+    | ',' star_expr ','
+        { $$ = [ $2 ] }
+    | ',' star_expr setmaker
         { $$ = [ $2 ].concat( $3 ) }
     ;
 

@@ -64,11 +64,13 @@ export type SyntaxNode =
   | Lambda
   | UnaryOperator
   | BinaryOperator
+  | DoubleStarred
   | Starred
   | Tuple
   | ListExpr
   | SetExpr
   | DictExpr
+  | KeyValuePair
   | Name
   | Literal
   | Class;
@@ -392,6 +394,13 @@ export interface BinaryOperator extends Locatable {
   right: SyntaxNode;
 }
 
+export const DOUBLE_STARRED = 'double-starred';
+
+export interface DoubleStarred extends Locatable {
+  type: typeof DOUBLE_STARRED;
+  value: SyntaxNode;
+}
+
 export const STARRED = 'starred';
 
 export interface Starred extends Locatable {
@@ -425,8 +434,16 @@ export const DICT = 'dict';
 
 export interface DictExpr extends Locatable {
   type: typeof DICT;
-  entries: { k: SyntaxNode; v: SyntaxNode }[];
+  entries: SyntaxNode[];
   comp_for?: SyntaxNode[];
+}
+
+export const KEY_VALUE_PAIR = 'key-value-pair';
+
+export interface KeyValuePair extends Locatable {
+  type: typeof KEY_VALUE_PAIR;
+  key: SyntaxNode;
+  value: SyntaxNode;
 }
 
 export const NAME = 'name';
@@ -588,9 +605,7 @@ function walkRecursive(
       children = node.items;
       break;
     case DICT:
-      children = flatten(node.entries.map(p => [p.k, p.v])).concat(
-        node.comp_for ? node.comp_for : []
-      );
+      children = node.entries.concat(node.comp_for ? node.comp_for : []);
       break;
     case ASSIGN:
       if (!node.sources) console.log(node);

@@ -60,9 +60,11 @@ function printTabbed(node: SyntaxNode, tabLevel: number): string {
         lines(node.code, tabLevel + 1)
       );
     case 'dict':
-      return '{' + node.entries.map(e => e.k + ':' + e.v) + '}';
+      return '{' + node.entries.map(e => printNode(e)) + '}';
     case 'dot':
       return printNode(node.value) + '.' + node.name;
+    case 'double-starred':
+      return '**' + printNode(node.value);
     case 'else':
       return tabs + 'else:' + lines(node.code, tabLevel + 1);
     case 'for':
@@ -125,6 +127,8 @@ function printTabbed(node: SyntaxNode, tabLevel: number): string {
       );
     case 'index':
       return printNode(node.value) + '[' + commaSep(node.args) + ']';
+    case 'key-value-pair':
+      return printNode(node.key) + ': ' + printNode(node.value);
     case 'lambda':
       return (
         'lambda ' +
