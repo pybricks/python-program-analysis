@@ -164,6 +164,12 @@ describe('python parser', () => {
       expect(mod.code[0].type).toBe('def');
       walk(mod);
     });
+
+    it('can parse assignment expressions', () => {
+      const mod = parse('a := b');
+      expect(mod.code[0].type).toBe('assign-expr');
+      walk(mod);
+    });
   });
 });
 

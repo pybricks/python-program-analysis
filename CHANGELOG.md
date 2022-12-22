@@ -7,6 +7,7 @@
 - Added parsing support for PEP 448 unpacking generalizations.
 - Added parsing support for PEP 515 underscores in numeric literals.
 - Added parsing support for PEP 570 positional only parameters.
+- Added parsing support for PEP 572 assignment expressions.
 
 ### Fixed
 - Fixed parsing variable with annotation only.

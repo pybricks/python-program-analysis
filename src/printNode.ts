@@ -17,6 +17,8 @@ function printTabbed(node: SyntaxNode, tabLevel: number): string {
         ' ' +
         commaSep(node.sources)
       );
+    case 'assign-expr':
+      return node.name + ' := ' + node.value;
     case 'binop':
       return '(' + printNode(node.left) + node.op + printNode(node.right) + ')';
     case 'break':

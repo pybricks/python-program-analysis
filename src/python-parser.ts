@@ -39,6 +39,7 @@ export type SyntaxNode =
   | Def
   | Parameter
   | Assignment
+  | AssignExpression
   | Assert
   | Pass
   | Return
@@ -182,6 +183,14 @@ export interface Assignment extends Locatable {
   op: string | undefined; // defined for augment e.g. +=
   targets: SyntaxNode[];
   sources: SyntaxNode[];
+}
+
+export const ASSIGN_EXPR = 'assign-expr';
+
+export interface AssignExpression extends Locatable {
+  type: typeof ASSIGN_EXPR;
+  name: string;
+  value: SyntaxNode;
 }
 
 export const ASSERT = 'assert';
