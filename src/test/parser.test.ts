@@ -125,6 +125,17 @@ describe('python parser', () => {
       walk(mod);
     });
   });
+
+  describe('Python 3.6 features', () => {
+    it.each(['10_000_000.0', '0xCAFE_F00D', '0b_0011_1111_0100_1110'])(
+      'can parse underscores in numeric literals',
+      code => {
+        const mod = parse(code);
+        expect(mod.code[0].type).toBe('literal');
+        walk(mod);
+      }
+    );
+  });
 });
 
 describe('ast walker', () => {

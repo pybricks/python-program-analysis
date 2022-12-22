@@ -5,6 +5,7 @@
 ### Added
 - Added parsing support for PEP 465 matrix multiplication operators.
 - Added parsing support for PEP 448 unpacking generalizations.
+- Added parsing support for PEP 515 underscores in numeric literals.
 
 ## 1.0.1
 

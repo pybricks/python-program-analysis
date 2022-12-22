@@ -43,21 +43,21 @@ bytesprefix             [bB]|[bB][rR]|[rR][bB]
 
 // numbers
 integer                 {hexinteger}|{octinteger}|{decinteger}
-decinteger              (([1-9]{digit}*)|"0"+)
-hexinteger              "0"[x|X]{hexdigit}+
-octinteger              "0"[o|O]{octdigit}+
-bininteger              "0"[b|B]{bindigit}+
+decinteger              (([1-9]("_"|{digit})*)|"0"+[_|0]*)
+hexinteger              "0"[x|X]("_"|{hexdigit})+
+octinteger              "0"[o|O]("_"|{octdigit})+
+bininteger              "0"[b|B]("_"|{bindigit})+
 hexdigit                {digit}|[a-fA-F]
 octdigit                [0-7]
 bindigit                [0|1]
 
 floatnumber             {exponentfloat}|{pointfloat}
-pointfloat              {fraction}|{intpart}{fraction}|{intpart}"."
+pointfloat              {fraction}|{digitpart}{fraction}|{digitpart}"."
 exponentfloat           ({digit}+|{pointfloat}){exponent}
-intpart                 {digit}+
-fraction                "."{digit}+
-exponent                [e|E][\+|\-]?({digit})+
-imagnumber              ({floatnumber}|{intpart})[jJ]
+digitpart               {digit}("_"|{digit})*
+fraction                "."{digitpart}
+exponent                [e|E][\+|\-]?{digitpart}
+imagnumber              ({floatnumber}|{digitpart})[jJ]
 
 %s INITIAL INLINE DEDENTS TRIPLE_D TRIPLE_S
 
